@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+    <style>
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 2px;
+            margin: 10px auto;
+            width: 306px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            font-size: 36px;
+            border: 1px solid #000;
+            background-color: blue;
+            color: black;
+        }
+
+        .cell.x {
+            color: red;
+        }
+
+        #reset {
+            display: block;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <div class="board">
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+        <div class="cell" onclick="makeMove(this)"></div>
+    </div>
+    
+    <button id="reset" onclick="resetGame()">Reset Game</button>
+
+    <script>
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+
+        const winningCombinations = [
+            [0, 1, 2], [3, 4, 5], [6, 7, 8],
+            [0, 3, 6], [1, 4, 7], [2, 5, 8],
+            [0, 4, 8], [2, 4, 6]
+        ];
+
+        function makeMove(cell) {
+            const cellIndex = Array.from(cell.parentElement.children).indexOf(cell);
+            if (!cell.textContent && currentPlayer === 'X' && !checkWinner()) {
+                cell.textContent = currentPlayer;
+                cell.classList.add(currentPlayer.toLowerCase());
+                gameBoard[cellIndex] = currentPlayer;
+                cell.style.pointerEvents = 'none';
+                if (checkWinner()) {
+                    alert(currentPlayer + ' wins!');
+                } else {
+                    currentPlayer = 'O';
+                    computerMove();
+                }
+            }
+        }
+
+        function computerMove() {
+            if (!checkWinner()) {
+                let emptyCells = [];
+                for (let i = 0; i < gameBoard.length; i++) {
+                    if (gameBoard[i] === '') {
+                        emptyCells.push(i);
+                    }
+                }
+                if (emptyCells.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                    const cellIndex = emptyCells[randomIndex];
+                    const cell = document.querySelectorAll('.cell')[cellIndex];
+                    cell.textContent = 'O';
+                    cell.classList.add('o');
+                    cell.style.pointerEvents = 'none';
+                    gameBoard[cellIndex] = 'O';
+                    if (checkWinner()) {
+                        alert('Computer wins!');
+                    }
+                    currentPlayer = 'X';
+                }
+            }
+        }
+
+        function checkWinner() {
+            for (let combo of winningCombinations) {
+                if (gameBoard[combo[0]] !== '' &&
+                    gameBoard[combo[0]] === gameBoard[combo[1]] &&
+                    gameBoard[combo[1]] === gameBoard[combo[2]]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function resetGame() {
+            const cells = document.querySelectorAll('.cell');
+            cells.forEach(cell => {
+                cell.textContent = '';
+                cell.classList.remove('x', 'o');
+                cell.style.pointerEvents = 'auto';
+            });
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            currentPlayer = 'X';
+        }
+    </script>
+</body>
+</html>
